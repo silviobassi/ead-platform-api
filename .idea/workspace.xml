@@ -5,15 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa2861d0-1eb3-4db7-b093-c272a77a8196" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/jpa-buddy-datasource.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jpa-buddy.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authuser/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/authuser/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authuser/src/main/java/com/authuser/authuser/AuthuserApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/authuser/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/authuser/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authuser/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/authuser/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,7 +109,7 @@
       <updated>1695132161983</updated>
       <workItem from="1695132163110" duration="587000" />
       <workItem from="1695132764514" duration="276000" />
-      <workItem from="1695133044717" duration="16255000" />
+      <workItem from="1695133044717" duration="16694000" />
     </task>
     <servers />
   </component>
