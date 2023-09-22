@@ -40,7 +40,12 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public List<Lesson> findAllByModule(Module module) {
-        return lessonRepository.findAllByModule(module);
+    public List<Lesson> findAllLessonsIntoModule(UUID moduleId) {
+        return lessonRepository.findAllLessonsIntoModule(moduleId);
+    }
+
+    @Override
+    public Optional<Lesson> findLessonIntoModule(UUID lessonId, UUID moduleId) {
+        return lessonRepository.findLessonIntoModule(lessonId, moduleId);
     }
 }

@@ -2,6 +2,7 @@ package com.ead.course.services;
 
 import com.ead.course.models.Lesson;
 import com.ead.course.models.Module;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,5 +18,7 @@ public interface LessonService {
 
      void delete(Lesson lesson);
 
-     List<Lesson> findAllByModule(Module module);
+     List<Lesson> findAllLessonsIntoModule(UUID moduleId);
+
+     Optional<Lesson> findLessonIntoModule(UUID lessonId, UUID moduleId);
 }
