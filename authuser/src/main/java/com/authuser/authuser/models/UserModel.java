@@ -2,10 +2,12 @@ package com.authuser.authuser.models;
 
 import com.authuser.authuser.enums.UserStatus;
 import com.authuser.authuser.enums.UserType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -13,8 +15,8 @@ import java.util.UUID;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
-@Table(name = "TB_USERS")
-public class UserModel {
+@Table(name = "users")
+public class UserModel extends RepresentationModel<UserModel> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
@@ -40,9 +42,12 @@ public class UserModel {
     @Column
     private String imageUrl;
     @Column(nullable = false)
-    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    //@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private OffsetDateTime creationDate;
     @Column(nullable = false)
-    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+
+    //@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private OffsetDateTime lastUpdateDate;
 }

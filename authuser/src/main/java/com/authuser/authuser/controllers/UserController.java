@@ -3,14 +3,22 @@ package com.authuser.authuser.controllers;
 import com.authuser.authuser.dtos.UserModelDto;
 import com.authuser.authuser.models.UserModel;
 import com.authuser.authuser.services.UserService;
+import com.authuser.authuser.specifications.SpecificationsTemplate;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,8 +32,15 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<UserModel> getAllUsers(){
-        return userService.findAll();
+    public Page<UserModel> getAllUsers(SpecificationsTemplate.UserSpec spec,
+                                       @PageableDefault(size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable){
+        Page<UserModel> userModelPage = userService.findAll(spec, pageable);
+        if(!userModelPage.isEmpty()){
+            for (UserModel user: userModelPage) {
+                user.add(linkTo(methodOn(UserController.class).getOneUser(user.getUserId())).withSelfRel());
+            }
+        }
+        return userModelPage;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -52,7 +67,9 @@ public class UserController {
 
     @PutMapping ("/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable(value = "userId") UUID userId,
-                                        @RequestBody @JsonView(UserModelDto.UserView.UserPut.class) UserModelDto userModelDto){
+                                        @RequestBody
+                                        @Validated(UserModelDto.UserView.UserPut.class)
+                                        @JsonView(UserModelDto.UserView.UserPut.class) UserModelDto userModelDto){
         Optional<UserModel> userCurrent = userService.findById(userId);
         if(userCurrent.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
@@ -70,7 +87,9 @@ public class UserController {
 
     @PutMapping ("/{userId}/password")
     public ResponseEntity<?> updatePassword(@PathVariable(value = "userId") UUID userId,
-                                            @RequestBody @JsonView(UserModelDto.UserView.PasswordPut.class) UserModelDto userModelDto){
+                                            @RequestBody
+                                            @Validated(UserModelDto.UserView.PasswordPut.class)
+                                            @JsonView(UserModelDto.UserView.PasswordPut.class) UserModelDto userModelDto){
         Optional<UserModel> userCurrent = userService.findById(userId);
         if(userCurrent.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
@@ -88,7 +107,9 @@ public class UserController {
 
     @PutMapping ("/{userId}/image")
     public ResponseEntity<?> updateImage(@PathVariable(value = "userId") UUID userId,
-                                         @RequestBody @JsonView(UserModelDto.UserView.ImagePut.class) UserModelDto userModelDto){
+                                         @RequestBody
+                                         @Validated(UserModelDto.UserView.ImagePut.class)
+                                         @JsonView(UserModelDto.UserView.ImagePut.class) UserModelDto userModelDto){
         Optional<UserModel> userCurrent = userService.findById(userId);
         if(userCurrent.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");

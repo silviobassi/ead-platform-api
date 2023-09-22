@@ -10,9 +10,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
+import java.util.TimeZone;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -23,6 +25,7 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody
+                                              @Validated(UserModelDto.UserView.RegistrationPost.class)
                                               @JsonView(UserModelDto.UserView.RegistrationPost.class)
                                               UserModelDto userModelDto){
 
