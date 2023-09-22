@@ -16,7 +16,7 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Table(name = "users")
-public class UserModel extends RepresentationModel<UserModel> {
+public class User extends RepresentationModel<User> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)

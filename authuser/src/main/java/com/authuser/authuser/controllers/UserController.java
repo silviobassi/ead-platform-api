@@ -1,7 +1,7 @@
 package com.authuser.authuser.controllers;
 
 import com.authuser.authuser.dtos.UserModelDto;
-import com.authuser.authuser.models.UserModel;
+import com.authuser.authuser.models.User;
 import com.authuser.authuser.services.UserService;
 import com.authuser.authuser.specifications.SpecificationsTemplate;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -32,11 +32,11 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public Page<UserModel> getAllUsers(SpecificationsTemplate.UserSpec spec,
-                                       @PageableDefault(size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable){
-        Page<UserModel> userModelPage = userService.findAll(spec, pageable);
+    public Page<User> getAllUsers(SpecificationsTemplate.UserSpec spec,
+                                  @PageableDefault(size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable){
+        Page<User> userModelPage = userService.findAll(spec, pageable);
         if(!userModelPage.isEmpty()){
-            for (UserModel user: userModelPage) {
+            for (User user: userModelPage) {
                 user.add(linkTo(methodOn(UserController.class).getOneUser(user.getUserId())).withSelfRel());
             }
         }
@@ -46,7 +46,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("{userId}")
     public ResponseEntity<?> getOneUser(@PathVariable(value = "userId") UUID userId){
-        Optional<UserModel> userCurrent = userService.findById(userId);
+        Optional<User> userCurrent = userService.findById(userId);
         if(userCurrent.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
@@ -55,7 +55,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable(value = "userId") UUID userId){
-        Optional<UserModel> userCurrent = userService.findById(userId);
+        Optional<User> userCurrent = userService.findById(userId);
         if(userCurrent.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
@@ -70,7 +70,7 @@ public class UserController {
                                         @RequestBody
                                         @Validated(UserModelDto.UserView.UserPut.class)
                                         @JsonView(UserModelDto.UserView.UserPut.class) UserModelDto userModelDto){
-        Optional<UserModel> userCurrent = userService.findById(userId);
+        Optional<User> userCurrent = userService.findById(userId);
         if(userCurrent.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
@@ -90,7 +90,7 @@ public class UserController {
                                             @RequestBody
                                             @Validated(UserModelDto.UserView.PasswordPut.class)
                                             @JsonView(UserModelDto.UserView.PasswordPut.class) UserModelDto userModelDto){
-        Optional<UserModel> userCurrent = userService.findById(userId);
+        Optional<User> userCurrent = userService.findById(userId);
         if(userCurrent.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         } if(!userCurrent.get().getPassword().equals(userModelDto.oldPassword())){
@@ -110,7 +110,7 @@ public class UserController {
                                          @RequestBody
                                          @Validated(UserModelDto.UserView.ImagePut.class)
                                          @JsonView(UserModelDto.UserView.ImagePut.class) UserModelDto userModelDto){
-        Optional<UserModel> userCurrent = userService.findById(userId);
+        Optional<User> userCurrent = userService.findById(userId);
         if(userCurrent.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }

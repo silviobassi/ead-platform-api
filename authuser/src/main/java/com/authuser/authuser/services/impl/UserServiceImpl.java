@@ -1,6 +1,6 @@
 package com.authuser.authuser.services.impl;
 
-import com.authuser.authuser.models.UserModel;
+import com.authuser.authuser.models.User;
 import com.authuser.authuser.respositories.UserRepository;
 import com.authuser.authuser.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,25 +21,25 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
 
     @Override
-    public List<UserModel> findAll() {
+    public List<User> findAll() {
         return userRepository.findAll();
     }
 
     @Override
-    public Optional<UserModel> findById(UUID userId) {
+    public Optional<User> findById(UUID userId) {
         return userRepository.findById(userId);
     }
 
     @Override
     @Transactional
-    public void delete(UserModel user) {
+    public void delete(User user) {
         userRepository.delete(user);
     }
 
     @Override
     @Transactional
-    public UserModel create(UserModel userModel) {
-        return userRepository.save(userModel);
+    public User create(User user) {
+        return userRepository.save(user);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserModel> findAll(Specification<UserModel> spec, Pageable pageable) {
+    public Page<User> findAll(Specification<User> spec, Pageable pageable) {
         return userRepository.findAll(spec, pageable);
     }
 }

@@ -3,7 +3,7 @@ package com.authuser.authuser.controllers;
 import com.authuser.authuser.dtos.UserModelDto;
 import com.authuser.authuser.enums.UserStatus;
 import com.authuser.authuser.enums.UserType;
-import com.authuser.authuser.models.UserModel;
+import com.authuser.authuser.models.User;
 import com.authuser.authuser.services.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.BeanUtils;
@@ -14,7 +14,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
-import java.util.TimeZone;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -37,7 +36,7 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Email is Already Taken!");
         }
 
-        var userModel = new UserModel();
+        var userModel = new User();
         BeanUtils.copyProperties(userModelDto, userModel);
         userModel.setUserStatus(UserStatus.ACTIVE);
         userModel.setUserType(UserType.STUDENT);

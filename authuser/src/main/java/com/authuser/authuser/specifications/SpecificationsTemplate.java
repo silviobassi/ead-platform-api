@@ -1,6 +1,6 @@
 package com.authuser.authuser.specifications;
 
-import com.authuser.authuser.models.UserModel;
+import com.authuser.authuser.models.User;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
@@ -14,6 +14,6 @@ public class SpecificationsTemplate {
             @Spec(path = "userStatus", spec = Equal.class),
             @Spec(path = "email", spec = Like.class)
     })
-    public interface UserSpec extends Specification<UserModel> {
+    public interface UserSpec extends Specification<User> {
     }
 }
