@@ -10,6 +10,5 @@ import java.util.UUID;
 public record LessonDto(
         @NotBlank String title,
         @NotBlank String description,
-        @NotBlank String videoUrl,
-        @NotNull UUID moduleId
+        @NotBlank String videoUrl
 ) implements Serializable { }

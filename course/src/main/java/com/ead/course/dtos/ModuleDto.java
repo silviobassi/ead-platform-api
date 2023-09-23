@@ -10,7 +10,5 @@ public record ModuleDto(
         @NotBlank
         String title,
         @NotBlank
-        String description,
-        @NotNull
-        UUID courseId
+        String description
 ) implements Serializable { }

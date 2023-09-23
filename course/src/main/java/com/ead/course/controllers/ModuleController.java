@@ -1,13 +1,20 @@
 package com.ead.course.controllers;
 
+
 import com.ead.course.dtos.ModuleDto;
 import com.ead.course.models.Course;
 import com.ead.course.models.Module;
 import com.ead.course.services.CourseService;
 import com.ead.course.services.ModuleService;
+import com.ead.course.specifications.SpecificationTemplate;
 import jakarta.validation.Valid;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +25,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Log4j2
 @RestController
-@RequestMapping
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class ModuleController {
 
@@ -29,69 +36,68 @@ public class ModuleController {
     @Autowired
     CourseService courseService;
 
-
-    @GetMapping("/courses/{courseId}/modules")
-    public ResponseEntity<?> getAllModules(@PathVariable(name = "courseId") UUID courseId) {
-        return ResponseEntity.status(HttpStatus.OK).body(moduleService.findAllModulesIntoCourse(courseId));
-    }
-
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/modules")
-    public ResponseEntity<?> create(@RequestBody @Valid ModuleDto moduleDTO) {
-        Optional<Course> courseCurrent = courseService.findById(moduleDTO.courseId());
-        if (courseCurrent.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found");
+    @PostMapping("/courses/{courseId}/modules")
+    public ResponseEntity<Object> saveModule(@PathVariable(value="courseId") UUID courseId,
+                                             @RequestBody @Valid ModuleDto moduleDto){
+        Optional<Course> courseOptional = courseService.findById(courseId);
+        if(courseOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.");
         }
         var module = new Module();
-        BeanUtils.copyProperties(moduleDTO, module);
+        BeanUtils.copyProperties(moduleDto, module);
         module.setCreationDate(OffsetDateTime.now(ZoneId.of("UTC")));
-        module.setCourse(courseCurrent.get());
-        module.setCreationDate(OffsetDateTime.now(ZoneId.of("UTC")));
-        return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.create(module));
+        module.setCourse(courseOptional.get());
+        moduleService.create(module);
+        return ResponseEntity.status(HttpStatus.CREATED).body(module);
     }
-
     @DeleteMapping("/courses/{courseId}/modules/{moduleId}")
-    public ResponseEntity<?> delete(@PathVariable(value = "moduleId") UUID moduleId,
-                                    @PathVariable(value = "moduleId") UUID courseId) {
-        Optional<Module> moduleIntoCourse = moduleService.findAllModulesIntoCourse(moduleId, courseId);
-
-        if (moduleIntoCourse.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Module not found for this course");
+    public ResponseEntity<Object> deleteModule(@PathVariable(value="courseId") UUID courseId,
+                                               @PathVariable(value="moduleId") UUID moduleId){
+        Optional<Module> moduleModelOptional = moduleService.findModuleIntoCourse(courseId, moduleId);
+        if(moduleModelOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Module not found for this course.");
         }
-        moduleService.delete(moduleIntoCourse.get());
-        return ResponseEntity.noContent().build();
+        moduleService.delete(moduleModelOptional.get());
+        return ResponseEntity.status(HttpStatus.OK).body("Module deleted successfully.");
     }
-
     @PutMapping("/courses/{courseId}/modules/{moduleId}")
-    public ResponseEntity<?> update(@PathVariable(value = "moduleId") UUID moduleId,
-                                    @PathVariable(value = "moduleId") UUID courseId,
-                                    @RequestBody @Valid ModuleDto moduleDto) {
-
-        Optional<Module> moduleIntoCourse = moduleService.findAllModulesIntoCourse(moduleId, courseId);
-
-        if (moduleIntoCourse.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Module not found for this course");
+    public ResponseEntity<Object> updateModule(@PathVariable(value="courseId") UUID courseId,
+                                               @PathVariable(value="moduleId") UUID moduleId,
+                                               @RequestBody @Valid ModuleDto moduleDto){
+        log.debug("PUT updateModule moduleDto received {} ", moduleDto.toString());
+        Optional<Module> moduleOptional = moduleService.findModuleIntoCourse(courseId, moduleId);
+        if(moduleOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Module not found for this course.");
         }
-
-        var module = moduleIntoCourse.get();
+        var module = moduleOptional.get();
         module.setTitle(moduleDto.title());
         module.setDescription(moduleDto.description());
-        module.setCreationDate(OffsetDateTime.now(ZoneId.of("UTC")));
-
-        return ResponseEntity.status(HttpStatus.OK).body(moduleService.create(module));
+        moduleService.create(module);
+        log.debug("PUT updateModule moduleId saved {} ", module.getModuleId());
+        log.info("Module updated successfully moduleId {} ", module.getModuleId());
+        return ResponseEntity.status(HttpStatus.OK).body(module);
     }
+
+
+    @GetMapping("/courses/{courseId}/modules")
+    public ResponseEntity<Page<Module>> getAllModules(@PathVariable(value="courseId") UUID courseId,
+                                                      SpecificationTemplate.ModuleSpec spec,
+                                                      @PageableDefault(size = 10, sort = "moduleId",
+                                                              direction = Sort.Direction.ASC) Pageable pageable){
+
+        return ResponseEntity.status(HttpStatus.OK).body(moduleService
+                .findAllByCourse(SpecificationTemplate.moduleCourseId(courseId).and(spec), pageable));
+    }
+
 
     @GetMapping("/courses/{courseId}/modules/{moduleId}")
-    public ResponseEntity<?> getOneCourse(@PathVariable(value = "moduleId") UUID moduleId,
-                                          @PathVariable(value = "courseId") UUID courseId) {
-        Optional<Module> moduleIntoCourse = moduleService.findAllModulesIntoCourse(moduleId, courseId);
-
-        if (moduleIntoCourse.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Module not found for this course");
+    public ResponseEntity<Object> getOneModule(@PathVariable(value="courseId") UUID courseId,
+                                               @PathVariable(value="moduleId") UUID moduleId){
+        Optional<Module> moduleOptional = moduleService.findModuleIntoCourse(courseId, moduleId);
+        if(moduleOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Module not found for this course.");
         }
-
-        return ResponseEntity.status(HttpStatus.OK).body(moduleIntoCourse.get());
+        return ResponseEntity.status(HttpStatus.OK).body(moduleOptional.get());
     }
-
 
 }
