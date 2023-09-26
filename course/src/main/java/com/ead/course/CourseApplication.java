@@ -10,7 +10,8 @@ public class CourseApplication {
 
     public static void main(String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        SpringApplication.run(CourseApplication.class, args);
+        SpringApplication app = new SpringApplication(CourseApplication.class);
+        app.run(args);
     }
 
 }

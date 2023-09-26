@@ -1,6 +1,6 @@
-package com.authuser.authuser.respositories;
+package com.ead.authuser.respositories;
 
-import com.authuser.authuser.models.User;
+import com.ead.authuser.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

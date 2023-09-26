@@ -1,4 +1,4 @@
-package com.authuser.authuser.enums;
+package com.ead.authuser.enums;
 
 public enum UserType {
     ADMIN, STUDENT, INSTRUCTOR

@@ -1,4 +1,4 @@
-package com.authuser.authuser.validation;
+package com.ead.authuser.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

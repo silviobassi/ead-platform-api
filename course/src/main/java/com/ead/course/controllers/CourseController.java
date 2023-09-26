@@ -73,7 +73,7 @@ public class CourseController {
                                                             @PageableDefault(size = 10, sort = "courseId",
                                                                     direction = Sort.Direction.ASC)
                                                             Pageable pageable){
-        return ResponseEntity.status(HttpStatus.OK).body(courseService.findAll(spec, pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(courseService.findAllCourses(spec, pageable));
     }
 
     @GetMapping("/{courseId}")

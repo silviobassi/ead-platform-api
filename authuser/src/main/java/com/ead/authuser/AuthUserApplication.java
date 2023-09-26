@@ -1,4 +1,4 @@
-package com.authuser.authuser;
+package com.ead.authuser;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

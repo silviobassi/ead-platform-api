@@ -1,4 +1,4 @@
-package com.authuser.authuser.configs;
+package com.ead.authuser.configs;
 
 import net.kaczmarzyk.spring.data.jpa.web.SpecificationArgumentResolver;
 import org.springframework.context.annotation.Configuration;

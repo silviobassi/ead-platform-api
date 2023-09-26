@@ -1,6 +1,6 @@
-package com.authuser.authuser.specifications;
+package com.ead.authuser.specifications;
 
-import com.authuser.authuser.models.User;
+import com.ead.authuser.models.User;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;

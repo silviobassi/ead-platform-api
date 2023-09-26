@@ -1,6 +1,6 @@
-package com.authuser.authuser.services;
+package com.ead.authuser.services;
 
-import com.authuser.authuser.models.User;
+import com.ead.authuser.models.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;

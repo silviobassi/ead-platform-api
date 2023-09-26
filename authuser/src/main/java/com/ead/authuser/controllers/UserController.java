@@ -1,10 +1,11 @@
-package com.authuser.authuser.controllers;
+package com.ead.authuser.controllers;
 
-import com.authuser.authuser.dtos.UserModelDto;
-import com.authuser.authuser.models.User;
-import com.authuser.authuser.services.UserService;
-import com.authuser.authuser.specifications.SpecificationsTemplate;
+import com.ead.authuser.dtos.UserDto;
+import com.ead.authuser.models.User;
+import com.ead.authuser.services.UserService;
+import com.ead.authuser.specifications.SpecificationsTemplate;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+@Log4j2
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/users")
@@ -68,37 +70,42 @@ public class UserController {
     @PutMapping ("/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable(value = "userId") UUID userId,
                                         @RequestBody
-                                        @Validated(UserModelDto.UserView.UserPut.class)
-                                        @JsonView(UserModelDto.UserView.UserPut.class) UserModelDto userModelDto){
+                                        @Validated(UserDto.UserView.UserPut.class)
+                                        @JsonView(UserDto.UserView.UserPut.class) UserDto userDto){
+        log.debug("PUT updateUser userDTO received {} ", userDto.toString());
+
         Optional<User> userCurrent = userService.findById(userId);
         if(userCurrent.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
         var userModel = userCurrent.get();
-        userModel.setFullName(userModelDto.fullName());
-        userModel.setPhoneNumber(userModelDto.phoneNumber());
-        userModel.setCpf(userModelDto.cpf());
+        userModel.setFullName(userDto.fullName());
+        userModel.setPhoneNumber(userDto.phoneNumber());
+        userModel.setCpf(userDto.cpf());
         userModel.setLastUpdateDate(OffsetDateTime.now());
+        userService.create(userModel);
 
-        return ResponseEntity.status(HttpStatus.OK).body(userService.create(userModel));
+        log.debug("PUT updateUser userDTO update {} ", userModel.toString());
+        log.info("User saved successfully userId {} ", userModel.getUserId());
+        return ResponseEntity.status(HttpStatus.OK).body(userModel);
 
     }
 
     @PutMapping ("/{userId}/password")
     public ResponseEntity<?> updatePassword(@PathVariable(value = "userId") UUID userId,
                                             @RequestBody
-                                            @Validated(UserModelDto.UserView.PasswordPut.class)
-                                            @JsonView(UserModelDto.UserView.PasswordPut.class) UserModelDto userModelDto){
+                                            @Validated(UserDto.UserView.PasswordPut.class)
+                                            @JsonView(UserDto.UserView.PasswordPut.class) UserDto userDto){
         Optional<User> userCurrent = userService.findById(userId);
         if(userCurrent.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        } if(!userCurrent.get().getPassword().equals(userModelDto.oldPassword())){
+        } if(!userCurrent.get().getPassword().equals(userDto.oldPassword())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Mismatched old password!");
         }
 
         var userModel = userCurrent.get();
-        userModel.setPassword(userModelDto.password());
+        userModel.setPassword(userDto.password());
         userModel.setLastUpdateDate(OffsetDateTime.now());
         userService.create(userModel);
         return ResponseEntity.noContent().build();
@@ -108,15 +115,15 @@ public class UserController {
     @PutMapping ("/{userId}/image")
     public ResponseEntity<?> updateImage(@PathVariable(value = "userId") UUID userId,
                                          @RequestBody
-                                         @Validated(UserModelDto.UserView.ImagePut.class)
-                                         @JsonView(UserModelDto.UserView.ImagePut.class) UserModelDto userModelDto){
+                                         @Validated(UserDto.UserView.ImagePut.class)
+                                         @JsonView(UserDto.UserView.ImagePut.class) UserDto userDto){
         Optional<User> userCurrent = userService.findById(userId);
         if(userCurrent.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
         var userModel = userCurrent.get();
-        userModel.setImageUrl(userModelDto.imageUrl());
+        userModel.setImageUrl(userDto.imageUrl());
         userModel.setLastUpdateDate(OffsetDateTime.now());
         return ResponseEntity.status(HttpStatus.OK).body(userService.create(userModel));
 

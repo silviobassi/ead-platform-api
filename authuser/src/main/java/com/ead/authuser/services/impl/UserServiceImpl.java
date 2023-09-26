@@ -1,8 +1,8 @@
-package com.authuser.authuser.services.impl;
+package com.ead.authuser.services.impl;
 
-import com.authuser.authuser.models.User;
-import com.authuser.authuser.respositories.UserRepository;
-import com.authuser.authuser.services.UserService;
+import com.ead.authuser.models.User;
+import com.ead.authuser.respositories.UserRepository;
+import com.ead.authuser.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
