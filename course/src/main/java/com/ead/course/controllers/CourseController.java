@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -70,18 +71,23 @@ public class CourseController {
     }
     @GetMapping
     public ResponseEntity<Page<Course>> getAllCourses(SpecificationTemplate.CourseSpec spec,
-                                                            @PageableDefault(size = 10, sort = "courseId",
-                                                                    direction = Sort.Direction.ASC)
-                                                            Pageable pageable){
-        return ResponseEntity.status(HttpStatus.OK).body(courseService.findAllCourses(spec, pageable));
+                                                            @PageableDefault(size = 10, sort = "courseId", direction = Sort.Direction.ASC)
+                                                            Pageable pageable, @RequestParam(required = false) UUID userId){
+        Page<Course> coursePage;
+
+        if(Objects.nonNull(userId)){
+            coursePage = courseService.findAllCourses(SpecificationTemplate.courseUserId(userId).and(spec), pageable);
+        } else {
+            coursePage = courseService.findAllCourses(spec, pageable);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(coursePage);
     }
 
     @GetMapping("/{courseId}")
     public ResponseEntity<Object> getOneCourse(@PathVariable(value="courseId") UUID courseId){
         Optional<Course> courseOptional = courseService.findById(courseId);
-        if(courseOptional.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(courseOptional.get());
+        return courseOptional.<ResponseEntity<Object>>map(course -> ResponseEntity.status(HttpStatus.OK)
+                .body(course)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found."));
     }
 }

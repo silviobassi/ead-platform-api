@@ -6,6 +6,7 @@ import com.ead.authuser.services.UserService;
 import com.ead.authuser.specifications.SpecificationsTemplate;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.log4j.Log4j2;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.time.OffsetDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,15 +36,24 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public Page<User> getAllUsers(SpecificationsTemplate.UserSpec spec,
-                                  @PageableDefault(size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable){
-        Page<User> userModelPage = userService.findAll(spec, pageable);
+    public ResponseEntity<Page<User>> getAllUsers(SpecificationsTemplate.UserSpec spec,
+                                  @PageableDefault(size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable,
+                                  @RequestParam(required = false) UUID courseId){
+        Page<User> userModelPage;
+
+        if(Objects.nonNull(courseId)){
+            userModelPage = userService.findAll(SpecificationsTemplate.userCourseId(courseId).and(spec), pageable);
+        } else {
+            userModelPage = userService.findAll(spec, pageable);
+        }
+
         if(!userModelPage.isEmpty()){
-            for (User user: userModelPage) {
+            for (User user: userModelPage.toList()) {
                 user.add(linkTo(methodOn(UserController.class).getOneUser(user.getUserId())).withSelfRel());
             }
         }
-        return userModelPage;
+
+        return ResponseEntity.status(HttpStatus.OK).body(userModelPage);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -86,7 +97,7 @@ public class UserController {
         userModel.setLastUpdateDate(OffsetDateTime.now());
         userService.create(userModel);
 
-        log.debug("PUT updateUser userDTO update {} ", userModel.toString());
+        log.debug("PUT updateUser userId update {} ", userModel.getUserId());
         log.info("User saved successfully userId {} ", userModel.getUserId());
         return ResponseEntity.status(HttpStatus.OK).body(userModel);
 
