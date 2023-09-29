@@ -7,13 +7,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.text.DateFormat;
 import java.time.OffsetDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -55,5 +51,9 @@ public class Course {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "course")
     private Set<CourseUser> courseUsers;
+
+    public CourseUser convertToCourseUser(UUID userId){
+        return new CourseUser(null, this, userId);
+    }
 
 }

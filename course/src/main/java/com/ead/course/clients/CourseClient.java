@@ -4,6 +4,7 @@ import com.ead.course.UserDto;
 import com.ead.course.dtos.ResponsePageDto;
 import com.ead.course.services.UtilsService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -27,6 +28,9 @@ public class CourseClient {
 
     final UtilsService utilsService;
 
+    @Value("${ead.api.url.auth-user}")
+    String REQUEST_URI;
+
     public CourseClient(RestTemplate restTemplate, UtilsService utilsService) {
         this.restTemplate = restTemplate;
         this.utilsService = utilsService;
@@ -35,7 +39,7 @@ public class CourseClient {
 
     public Page<UserDto> getAllUserByCourse(UUID courseId, Pageable pageable) {
         List<UserDto> users = null;
-        String url = utilsService.generateUrl(courseId, pageable);
+        String url = REQUEST_URI + utilsService.generateUrl(courseId, pageable);
         log.debug("Request URL: {} ", url);
         log.info("Request URL: {} ", url);
         try {
@@ -49,9 +53,9 @@ public class CourseClient {
 
             log.debug("Response Number of Elements: {} ", users.size());
         } catch (HttpStatusCodeException e) {
-            log.error("Error request /users %s ", e);
+            log.error("Error request /courses %s ", e);
         }
-        log.info("Ending request /users {} ", courseId);
+        log.info("Ending request /courses {} ", courseId);
         assert users != null;
         return new PageImpl<>(users);
     }
