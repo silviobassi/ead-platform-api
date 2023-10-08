@@ -23,4 +23,6 @@ public interface UserService {
     boolean existsByEmail(String email);
 
     Page<User> findAll(Specification<User> spec, Pageable pageable);
+
+    User save(User user);
 }

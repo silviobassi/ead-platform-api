@@ -53,4 +53,8 @@ public class User extends RepresentationModel<User> {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Set<UserCourse> userCourses;
+
+    public UserCourse convertToUserCourse(UUID courseId){
+        return new UserCourse(null, this, courseId);
+    }
 }
