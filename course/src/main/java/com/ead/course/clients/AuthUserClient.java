@@ -30,7 +30,7 @@ public class AuthUserClient {
     final UtilsService utilsService;
 
     @Value("${ead.api.url.auth-user}")
-    String REQUEST_URI;
+    String REQUEST_URL_AUTHUSER;
 
     public AuthUserClient(RestTemplate restTemplate, UtilsService utilsService) {
         this.restTemplate = restTemplate;
@@ -40,7 +40,7 @@ public class AuthUserClient {
 
     public Page<UserDto> getAllUserByCourse(UUID courseId, Pageable pageable) {
         List<UserDto> users = null;
-        String url = REQUEST_URI + utilsService.generateUrl(courseId, pageable);
+        String url = REQUEST_URL_AUTHUSER + utilsService.generateUrl(courseId, pageable);
         log.debug("Request URL: {} ", url);
         log.info("Request URL: {} ", url);
         try {
@@ -62,13 +62,18 @@ public class AuthUserClient {
     }
 
     public ResponseEntity<UserDto> getOneUserById(UUID userId) {
-        String url = REQUEST_URI + "/users/" + userId;
+        String url = REQUEST_URL_AUTHUSER + "/users/" + userId;
         return restTemplate.exchange(url, HttpMethod.GET, null, UserDto.class);
     }
 
     public void postSubscriptionUserInCourse(UUID courseId, UUID userId) {
-        String url = REQUEST_URI + "/users/" + userId + "/courses/subscription";
+        String url = REQUEST_URL_AUTHUSER + "/users/" + userId + "/courses/subscription";
         CourseUserDto courseUserDto = new CourseUserDto(courseId, userId);
         restTemplate.postForObject(url, courseUserDto, String.class);
+    }
+
+    public void deleteCourseInAuthUser(UUID courseId) {
+        String url = REQUEST_URL_AUTHUSER + "/users/courses/" + courseId;
+        restTemplate.exchange(url, HttpMethod.DELETE, null, String.class);
     }
 }

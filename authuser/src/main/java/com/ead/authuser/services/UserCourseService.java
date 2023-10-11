@@ -9,4 +9,8 @@ public interface UserCourseService {
     boolean existsByUserAndCourseId(User user, UUID courseId);
 
     UserCourse save(UserCourse userCourse);
+
+    boolean existsByCourseId(UUID courseId);
+
+    void deleteUserCourseByCourse(UUID courseId);
 }
