@@ -28,7 +28,7 @@ public class CourseClient {
     final UtilsService utilsService;
 
     @Value("${ead.api.url.course}")
-    private String REQUEST_URI;
+    private String REQUEST_URL_COURSE;
 
     public CourseClient(RestTemplate restTemplate, UtilsService utilsService) {
         this.restTemplate = restTemplate;
@@ -37,7 +37,7 @@ public class CourseClient {
 
     public Page<CourseDto> getAllCoursesByUser(UUID userId, Pageable pageable) {
         List<CourseDto> courses = null;
-        String url =  REQUEST_URI + utilsService.generateUrl(userId, pageable);
+        String url = REQUEST_URL_COURSE + utilsService.generateUrl(userId, pageable);
         log.debug("Request URL: {} ", url);
         log.info("Request URL: {} ", url);
         try {
@@ -56,5 +56,10 @@ public class CourseClient {
         log.info("Ending request /courses {} ", userId);
         assert courses != null;
         return new PageImpl<>(courses);
+    }
+
+    public void deleteUserInCourse(UUID userId) {
+        String url = REQUEST_URL_COURSE + "/courses/users/" + userId;
+        restTemplate.exchange(url, HttpMethod.DELETE, null, String.class);
     }
 }

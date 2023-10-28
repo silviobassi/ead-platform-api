@@ -66,8 +66,6 @@ public class CourseServiceImpl implements CourseService {
         if(deleteCourseUserInAuthUser){
             authUserClient.deleteCourseInAuthUser(course.getCourseId());
         }
-
-
     }
 
     @Transactional
