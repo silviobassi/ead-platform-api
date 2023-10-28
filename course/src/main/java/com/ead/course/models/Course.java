@@ -48,12 +48,4 @@ public class Course {
     @Fetch(FetchMode.SUBSELECT)
     private Set<Module> modules;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "course")
-    private Set<CourseUser> courseUsers;
-
-    public CourseUser convertToCourseUser(UUID userId){
-        return new CourseUser(null, this, userId);
-    }
-
 }

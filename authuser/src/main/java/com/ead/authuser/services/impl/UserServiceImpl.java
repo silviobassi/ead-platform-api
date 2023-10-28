@@ -2,8 +2,6 @@ package com.ead.authuser.services.impl;
 
 import com.ead.authuser.clients.CourseClient;
 import com.ead.authuser.models.User;
-import com.ead.authuser.models.UserCourse;
-import com.ead.authuser.respositories.UserCourseRepository;
 import com.ead.authuser.respositories.UserRepository;
 import com.ead.authuser.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +20,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository userRepository;
-    @Autowired
-    private UserCourseRepository userCourseRepository;
 
     @Autowired
     private CourseClient courseClient;
@@ -41,16 +37,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void delete(User user) {
-        boolean deleteUserCourseInCourse = false;
-        List<UserCourse> userCourseList = userCourseRepository.findAllUserCourseIntoUser(user.getUserId());
-        if(!userCourseList.isEmpty()){
-            userCourseRepository.deleteAll(userCourseList);
-            deleteUserCourseInCourse = true;
-        }
         userRepository.delete(user);
-        if(deleteUserCourseInCourse){
-            courseClient.deleteUserInCourse(user.getUserId());
-        }
     }
 
     @Override

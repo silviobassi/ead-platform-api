@@ -37,18 +37,11 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public ResponseEntity<Page<User>> getAllUsers(SpecificationsTemplate.UserSpec spec,
-                                  @PageableDefault(size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable,
-                                  @RequestParam(required = false) UUID courseId){
-        Page<User> userModelPage;
+                                                  @PageableDefault(size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<User> userModelPage = userService.findAll(spec, pageable);
 
-        if(Objects.nonNull(courseId)){
-            userModelPage = userService.findAll(SpecificationsTemplate.userCourseId(courseId).and(spec), pageable);
-        } else {
-            userModelPage = userService.findAll(spec, pageable);
-        }
-
-        if(!userModelPage.isEmpty()){
-            for (User user: userModelPage.toList()) {
+        if (!userModelPage.isEmpty()) {
+            for (User user : userModelPage.toList()) {
                 user.add(linkTo(methodOn(UserController.class).getOneUser(user.getUserId())).withSelfRel());
             }
         }
@@ -58,18 +51,18 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("{userId}")
-    public ResponseEntity<?> getOneUser(@PathVariable(value = "userId") UUID userId){
+    public ResponseEntity<?> getOneUser(@PathVariable(value = "userId") UUID userId) {
         Optional<User> userCurrent = userService.findById(userId);
-        if(userCurrent.isEmpty()){
+        if (userCurrent.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
         return ResponseEntity.status(HttpStatus.OK).body(userCurrent);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<?> deleteUser(@PathVariable(value = "userId") UUID userId){
+    public ResponseEntity<?> deleteUser(@PathVariable(value = "userId") UUID userId) {
         Optional<User> userCurrent = userService.findById(userId);
-        if(userCurrent.isEmpty()){
+        if (userCurrent.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
@@ -78,15 +71,15 @@ public class UserController {
 
     }
 
-    @PutMapping ("/{userId}")
+    @PutMapping("/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable(value = "userId") UUID userId,
                                         @RequestBody
                                         @Validated(UserDto.UserView.UserPut.class)
-                                        @JsonView(UserDto.UserView.UserPut.class) UserDto userDto){
+                                        @JsonView(UserDto.UserView.UserPut.class) UserDto userDto) {
         log.debug("PUT updateUser userDTO received {} ", userDto.toString());
 
         Optional<User> userCurrent = userService.findById(userId);
-        if(userCurrent.isEmpty()){
+        if (userCurrent.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
@@ -103,15 +96,16 @@ public class UserController {
 
     }
 
-    @PutMapping ("/{userId}/password")
+    @PutMapping("/{userId}/password")
     public ResponseEntity<?> updatePassword(@PathVariable(value = "userId") UUID userId,
                                             @RequestBody
                                             @Validated(UserDto.UserView.PasswordPut.class)
-                                            @JsonView(UserDto.UserView.PasswordPut.class) UserDto userDto){
+                                            @JsonView(UserDto.UserView.PasswordPut.class) UserDto userDto) {
         Optional<User> userCurrent = userService.findById(userId);
-        if(userCurrent.isEmpty()){
+        if (userCurrent.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        } if(!userCurrent.get().getPassword().equals(userDto.oldPassword())){
+        }
+        if (!userCurrent.get().getPassword().equals(userDto.oldPassword())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Mismatched old password!");
         }
 
@@ -123,13 +117,13 @@ public class UserController {
 
     }
 
-    @PutMapping ("/{userId}/image")
+    @PutMapping("/{userId}/image")
     public ResponseEntity<?> updateImage(@PathVariable(value = "userId") UUID userId,
                                          @RequestBody
                                          @Validated(UserDto.UserView.ImagePut.class)
-                                         @JsonView(UserDto.UserView.ImagePut.class) UserDto userDto){
+                                         @JsonView(UserDto.UserView.ImagePut.class) UserDto userDto) {
         Optional<User> userCurrent = userService.findById(userId);
-        if(userCurrent.isEmpty()){
+        if (userCurrent.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 

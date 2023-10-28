@@ -1,7 +1,6 @@
 package com.ead.course.specifications;
 
 import com.ead.course.models.Course;
-import com.ead.course.models.CourseUser;
 import com.ead.course.models.Lesson;
 import com.ead.course.models.Module;
 import jakarta.persistence.criteria.Expression;
@@ -10,7 +9,6 @@ import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.hibernate.sql.ast.spi.ExpressionReplacementWalker;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Collection;
@@ -53,10 +51,4 @@ public class SpecificationTemplate {
         };
     }
 
-    public static Specification<Course> courseUserId(final UUID userId){
-        return (root, query, builder) -> {
-            query.distinct(true);
-            return builder.equal(root.join("courseUsers").get("userId"), userId);
-        };
-    }
 }
