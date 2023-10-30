@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.br.CPF;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -33,6 +34,7 @@ public record UserDto(UUID userId,
                            String fullName,
                       @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
                            String phoneNumber,
+                      @CPF(groups = {UserView.RegistrationPost.class, UserView.UserPut.class})
                       @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
                            String cpf,
                       @NotBlank(groups = UserView.ImagePut.class)

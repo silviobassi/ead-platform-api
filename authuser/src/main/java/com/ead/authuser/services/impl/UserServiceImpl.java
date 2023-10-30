@@ -1,7 +1,9 @@
 package com.ead.authuser.services.impl;
 
 import com.ead.authuser.clients.CourseClient;
+import com.ead.authuser.enums.ActionType;
 import com.ead.authuser.models.User;
+import com.ead.authuser.publishers.UserEventPublisher;
 import com.ead.authuser.respositories.UserRepository;
 import com.ead.authuser.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +20,18 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
+    final
     UserRepository userRepository;
 
-    @Autowired
-    private CourseClient courseClient;
+    private final CourseClient courseClient;
+
+    private final UserEventPublisher userEventPublisher;
+
+    public UserServiceImpl(UserRepository userRepository, CourseClient courseClient, UserEventPublisher userEventPublisher) {
+        this.userRepository = userRepository;
+        this.courseClient = courseClient;
+        this.userEventPublisher = userEventPublisher;
+    }
 
     @Override
     public List<User> findAll() {
@@ -62,7 +71,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User save(User user) {
-        return userRepository.save(user);
+    @Transactional
+    public User saveUser(User user){
+        user = create(user);
+        userEventPublisher.publishUserEvent(user.convertToUserEventDto(), ActionType.CREATE);
+        return user;
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(User user) {
+        delete(user);
+        userEventPublisher.publishUserEvent(user.convertToUserEventDto(), ActionType.DELETE);
+    }
+
+    @Override
+    @Transactional
+    public User updateUser(User user) {
+        user = create(user);
+        userEventPublisher.publishUserEvent(user.convertToUserEventDto(), ActionType.UPDATE);
+        return user;
+    }
+
+    @Override
+    @Transactional
+    public User updatePassword(User user) {
+        return create(user);
     }
 }

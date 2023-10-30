@@ -1,20 +1,28 @@
 package com.ead.course.validation;
 
 import com.ead.course.dtos.CourseDto;
+import com.ead.course.enums.UserType;
+import com.ead.course.models.User;
+import com.ead.course.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
 public class CourseValidator implements Validator {
 
-    @Autowired
-    @Qualifier("defaultValidator")
-    private Validator validator;
+    private final Validator validator;
+    private final UserService userService;
+
+    public CourseValidator(@Qualifier("defaultValidator") Validator validator, UserService userService) {
+        this.validator = validator;
+        this.userService = userService;
+    }
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -25,25 +33,23 @@ public class CourseValidator implements Validator {
     public void validate(Object target, Errors errors) {
         CourseDto courseDto = (CourseDto) target;
         validator.validate(courseDto, errors);
-        if(!errors.hasErrors()){
+        if (!errors.hasErrors()) {
             validateUserInstructor(courseDto.userInstructor(), errors);
         }
     }
 
-    private void validateUserInstructor(UUID userInstructor, Errors errors){
+    private void validateUserInstructor(UUID userInstructor, Errors errors) {
 
-       /* ResponseEntity<UserDto> responseUserInstructor;
-        try {
-            responseUserInstructor = authUserClient.getOneUserById(userInstructor);
-            if(Objects.requireNonNull(responseUserInstructor.getBody()).userType().equals(UserType.STUDENT)){
-                errors.rejectValue("userInstructor", "UserInstructorError",
-                        "User must be INSTRUCTOR or ADMIN.");
-            }
-        } catch (HttpStatusCodeException e) {
-            if(e.getStatusCode().equals(HttpStatus.NOT_FOUND)){
-                errors.rejectValue("userInstructor", "UserInstructorError",
-                        "Instructor not found.");
-            }
-        }*/
+        Optional<User> userOptional = userService.findById(userInstructor);
+
+        if (userOptional.isEmpty()) {
+            errors.rejectValue("userInstructor", "UserInstructorError",
+                    "Instructor not found.");
+        }
+        if (userOptional.isPresent() && userOptional.get().getUserType().equals(UserType.STUDENT.toString())) {
+            errors.rejectValue("userInstructor", "UserInstructorError",
+                    "User must be INSTRUCTOR or ADMIN.");
+        }
+
     }
 }

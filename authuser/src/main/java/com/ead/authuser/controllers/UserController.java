@@ -66,7 +66,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
-        userService.delete(userCurrent.get());
+        userService.deleteUser(userCurrent.get());
         return ResponseEntity.noContent().build();
 
     }
@@ -88,7 +88,7 @@ public class UserController {
         userModel.setPhoneNumber(userDto.phoneNumber());
         userModel.setCpf(userDto.cpf());
         userModel.setLastUpdateDate(OffsetDateTime.now());
-        userService.create(userModel);
+        userService.updateUser(userModel);
 
         log.debug("PUT updateUser userId update {} ", userModel.getUserId());
         log.info("User saved successfully userId {} ", userModel.getUserId());
@@ -112,7 +112,7 @@ public class UserController {
         var userModel = userCurrent.get();
         userModel.setPassword(userDto.password());
         userModel.setLastUpdateDate(OffsetDateTime.now());
-        userService.create(userModel);
+        userService.updatePassword(userModel);
         return ResponseEntity.noContent().build();
 
     }
@@ -130,7 +130,8 @@ public class UserController {
         var userModel = userCurrent.get();
         userModel.setImageUrl(userDto.imageUrl());
         userModel.setLastUpdateDate(OffsetDateTime.now());
-        return ResponseEntity.status(HttpStatus.OK).body(userService.create(userModel));
+        userService.updateUser(userModel);
+        return ResponseEntity.status(HttpStatus.OK).body(userModel);
 
     }
 

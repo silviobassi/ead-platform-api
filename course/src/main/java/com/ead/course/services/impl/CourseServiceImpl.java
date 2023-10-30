@@ -22,16 +22,15 @@ import java.util.UUID;
 @Service
 public class CourseServiceImpl implements CourseService {
 
-    @Autowired
-    CourseRepository courseRepository;
+    private final CourseRepository courseRepository;
+    private final ModuleRepository moduleRepository;
+    private final LessonRepository lessonRepository;
 
-    @Autowired
-    private ModuleRepository moduleRepository;
-    @Autowired
-    private LessonRepository lessonRepository;
-    @Autowired
-    private UserRepository userRepository;
-
+    public CourseServiceImpl(CourseRepository courseRepository, ModuleRepository moduleRepository, LessonRepository lessonRepository) {
+        this.courseRepository = courseRepository;
+        this.moduleRepository = moduleRepository;
+        this.lessonRepository = lessonRepository;
+    }
 
     @Override
     @Transactional
@@ -46,6 +45,7 @@ public class CourseServiceImpl implements CourseService {
             }
             moduleRepository.deleteAll(moduleList);
         }
+        courseRepository.deleteCourseUserByCourse(course.getCourseId());
         courseRepository.delete(course);
     }
 
@@ -65,5 +65,15 @@ public class CourseServiceImpl implements CourseService {
         return courseRepository.findAll(spec, pageable);
     }
 
+    @Override
+    public boolean existsByCourseAndUser(UUID courseId, UUID subscriptionUserId) {
+        return courseRepository.existsByCourseAndUser(courseId, subscriptionUserId);
+    }
+
+    @Transactional
+    @Override
+    public void saveSubscriptionUserInCourse(UUID courseId, UUID userId) {
+        courseRepository.saveCourseUser(courseId, userId);
+    }
 
 }

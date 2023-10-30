@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.ManyToAny;
 
 import java.time.OffsetDateTime;
 import java.util.Set;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
-@Table(name = "course")
+@Table(name = "courses")
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -47,5 +48,12 @@ public class Course {
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     private Set<Module> modules;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToAny(fetch = FetchType.LAZY)
+    @JoinTable(name = "courses_users",
+            joinColumns = @JoinColumn(name = "course_id"),
+    inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> users;
 
 }

@@ -36,7 +36,7 @@ public class InstructorController {
         User user = userOptional.get();
         user.setUserType(UserType.INSTRUCTOR);
         user.setLastUpdateDate(OffsetDateTime.now());
-        userService.save(user);
+        userService.updateUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
