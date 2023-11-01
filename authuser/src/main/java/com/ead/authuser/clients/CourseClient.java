@@ -3,6 +3,7 @@ package com.ead.authuser.clients;
 import com.ead.authuser.dtos.CourseDto;
 import com.ead.authuser.dtos.ResponsePageDto;
 import com.ead.authuser.services.UtilsService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -35,11 +36,14 @@ public class CourseClient {
         this.utilsService = utilsService;
     }
 
+    //@Retry(name = "retryInstance")
+    @CircuitBreaker(name = "circuitbreakerInstance")
     public Page<CourseDto> getAllCoursesByUser(UUID userId, Pageable pageable) {
         List<CourseDto> courses = null;
         String url = REQUEST_URL_COURSE + utilsService.generateUrl(userId, pageable);
         log.debug("Request URL: {} ", url);
         log.info("Request URL: {} ", url);
+        System.out.println("---Start Request to Course Microservice ----");
         try {
             ParameterizedTypeReference<ResponsePageDto<CourseDto>> responseType =
                     new ParameterizedTypeReference<ResponsePageDto<CourseDto>>() {

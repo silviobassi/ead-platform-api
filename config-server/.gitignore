@@ -15,7 +15,6 @@ target/
 
 ### IntelliJ IDEA ###
 .idea
-.jpb
 *.iws
 *.iml
 *.ipr
@@ -32,4 +31,3 @@ build/
 
 ### VS Code ###
 .vscode/
-ead-server-repository
