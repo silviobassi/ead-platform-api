@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.br.CPF;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -48,4 +49,5 @@ public record UserDto(UUID userId,
         public static interface PasswordPut{}
         public static interface ImagePut{}
     }
+
 }
