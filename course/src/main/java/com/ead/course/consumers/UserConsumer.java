@@ -34,7 +34,7 @@ public class UserConsumer {
 
         switch (ActionType.valueOf(userEventDto.getActionType())){
             case CREATE, UPDATE -> userService.create(user);
-            case DELETE -> userService.delete(userEventDto.getUserId());
+            case DELETE -> userService.delete(user.getUserId());
         }
     }
 }
