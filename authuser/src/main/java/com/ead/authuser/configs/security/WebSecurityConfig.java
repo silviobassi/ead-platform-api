@@ -33,7 +33,7 @@ public class WebSecurityConfig {
     AuthenticationEntryPointImpl authenticationEntryPoint;
 
     private static final String[] AUTH_WHITELIST = {
-            "/auth/**",
+            "/auth/**"
     };
 
     public WebSecurityConfig(UserDetailsServiceImpl userDetailsService, AuthenticationEntryPointImpl authenticationEntryPoint) {
@@ -50,7 +50,7 @@ public class WebSecurityConfig {
             .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                     authorizationManagerRequestMatcherRegistry
                             .requestMatchers(AUTH_WHITELIST).permitAll()
-                            .requestMatchers(HttpMethod.GET, "/users/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.GET, "/users/**").hasRole("STUDENT")
                             .anyRequest()
                             .authenticated())
             .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
