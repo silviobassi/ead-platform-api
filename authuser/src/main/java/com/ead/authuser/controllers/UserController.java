@@ -1,29 +1,32 @@
 package com.ead.authuser.controllers;
 
+import com.ead.authuser.configs.security.AuthenticationCurrentUserService;
+import com.ead.authuser.configs.security.UserDetailsImpl;
 import com.ead.authuser.dtos.UserDto;
 import com.ead.authuser.models.User;
 import com.ead.authuser.services.UserService;
 import com.ead.authuser.specifications.SpecificationsTemplate;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.log4j.Log4j2;
-import org.apache.coyote.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 import java.time.OffsetDateTime;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Log4j2
 @RestController
@@ -31,13 +34,24 @@ import java.util.UUID;
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    UserService userService;
+    final UserService userService;
+    final AuthenticationCurrentUserService authenticationCurrentUserService;
 
+    public UserController(UserService userService, AuthenticationCurrentUserService authenticationCurrentUserService) {
+        this.userService = userService;
+        this.authenticationCurrentUserService = authenticationCurrentUserService;
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public ResponseEntity<Page<User>> getAllUsers(SpecificationsTemplate.UserSpec spec,
-                                                  @PageableDefault(size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
+                                                  @PageableDefault(size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable,
+                                                  Authentication authentication) {
+
+        UserDetails userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        log.info("Authentication {}", userDetails.getUsername());
+
         Page<User> userModelPage = userService.findAll(spec, pageable);
 
         if (!userModelPage.isEmpty()) {
@@ -49,14 +63,23 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userModelPage);
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("{userId}")
     public ResponseEntity<?> getOneUser(@PathVariable(value = "userId") UUID userId) {
-        Optional<User> userCurrent = userService.findById(userId);
-        if (userCurrent.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+
+        UUID currentUserId = authenticationCurrentUserService.getCurrentUser().getUserId();
+
+        if(currentUserId.equals(userId)){
+            Optional<User> userCurrent = userService.findById(userId);
+            if (userCurrent.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(userCurrent);
+        } else {
+            throw new AccessDeniedException("Forbidden");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(userCurrent);
+
     }
 
     @DeleteMapping("/{userId}")

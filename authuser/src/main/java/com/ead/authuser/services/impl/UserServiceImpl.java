@@ -20,16 +20,10 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
 
-    final
-    UserRepository userRepository;
-
-    private final CourseClient courseClient;
-
+    final UserRepository userRepository;
     private final UserEventPublisher userEventPublisher;
-
-    public UserServiceImpl(UserRepository userRepository, CourseClient courseClient, UserEventPublisher userEventPublisher) {
+    public UserServiceImpl(UserRepository userRepository, UserEventPublisher userEventPublisher) {
         this.userRepository = userRepository;
-        this.courseClient = courseClient;
         this.userEventPublisher = userEventPublisher;
     }
 
