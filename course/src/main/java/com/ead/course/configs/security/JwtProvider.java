@@ -1,4 +1,4 @@
-package com.ead.authuser.configs.security;
+package com.ead.course.configs.security;
 
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -8,43 +8,20 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.Date;
-import java.util.stream.Collectors;
 
-@Log4j2
 @Component
 public class JwtProvider {
 
+    Logger log = LogManager.getLogger(JwtProvider.class);
+
     @Value("${ead.auth.jwtSecret}")
     private String jwtSecret;
-
-    @Value("${ead.auth.jwtExpirationMs}")
-    private int jwtExpirationMs;
-
-    public String generateJwt(Authentication authentication) throws NoSuchAlgorithmException, InvalidKeySpecException {
-
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-
-        final String roles = userPrincipal.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
-
-        return Jwts.builder()
-                .claim("roles", roles)
-                .subject(userPrincipal.getUserId().toString())
-                .issuedAt(new Date())
-                .expiration(getExpiration())
-                .signWith(setSecretKey())
-                .compact();
-    }
 
     public String getSubjectJwt(String token) {
         return Jwts.parser()
@@ -53,6 +30,16 @@ public class JwtProvider {
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+    }
+
+    public String getClaimNameJwt(String token, String claimName) {
+        return Jwts.parser()
+                .verifyWith(setSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get(claimName)
+                .toString();
     }
 
     public boolean validateJwt(String authToken) {
@@ -79,10 +66,6 @@ public class JwtProvider {
 
     private SecretKey setSecretKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
-    }
-
-    private Date getExpiration(){
-        return new Date((new Date()).getTime() + jwtExpirationMs);
     }
 
 }

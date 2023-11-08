@@ -10,6 +10,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -38,27 +40,29 @@ public class CourseClient {
 
     //@Retry(name = "retryInstance")
     @CircuitBreaker(name = "circuitbreakerInstance")
-    public Page<CourseDto> getAllCoursesByUser(UUID userId, Pageable pageable) {
+    public Page<CourseDto> getAllCoursesByUser(UUID userId, Pageable pageable, String token) {
+
+
         List<CourseDto> courses = null;
         String url = REQUEST_URL_COURSE + utilsService.generateUrl(userId, pageable);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", token);
+        HttpEntity<String> requestEntity = new HttpEntity<>("parameters", headers);
+
         log.debug("Request URL: {} ", url);
         log.info("Request URL: {} ", url);
         System.out.println("---Start Request to Course Microservice ----");
-        try {
-            ParameterizedTypeReference<ResponsePageDto<CourseDto>> responseType =
-                    new ParameterizedTypeReference<ResponsePageDto<CourseDto>>() {
-                    };
 
-            ResponseEntity<ResponsePageDto<CourseDto>> result =
-                    restTemplate.exchange(url, HttpMethod.GET, null, responseType);
-            courses = Objects.requireNonNull(result.getBody()).getContent();
+        ParameterizedTypeReference<ResponsePageDto<CourseDto>> responseType =
+                new ParameterizedTypeReference<ResponsePageDto<CourseDto>>() {
+                };
 
-            log.debug("Response Number of Elements: {} ", courses.size());
-        } catch (HttpStatusCodeException e) {
-            log.error("Error request /courses %s ", e);
-        }
+        ResponseEntity<ResponsePageDto<CourseDto>> result =
+                restTemplate.exchange(url, HttpMethod.GET, requestEntity, responseType);
+        courses = Objects.requireNonNull(result.getBody()).getContent();
+        log.debug("Response Number of Elements: {} ", courses.size());
         log.info("Ending request /courses {} ", userId);
-        assert courses != null;
         return new PageImpl<>(courses);
     }
 

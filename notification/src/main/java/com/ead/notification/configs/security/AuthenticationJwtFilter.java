@@ -1,11 +1,10 @@
-package com.ead.authuser.configs.security;
+package com.ead.notification.configs.security;
 
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,14 +17,11 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 
-@Log4j2
+
 public class AuthenticationJwtFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtProvider jwtProvider;
-
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -35,7 +31,8 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
             String jwtStr = getTokenHeader(request);
             if (Objects.nonNull(jwtStr) && jwtProvider.validateJwt(jwtStr)) {
                 UUID userId = UUID.fromString(jwtProvider.getSubjectJwt(jwtStr));
-                UserDetails userDetails = userDetailsService.loadUserById(UUID.fromString(String.valueOf(userId)));
+                String rolesStr = jwtProvider.getClaimNameJwt(jwtStr, "roles");
+                UserDetails userDetails = UserDetailsImpl.build(userId, rolesStr);
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

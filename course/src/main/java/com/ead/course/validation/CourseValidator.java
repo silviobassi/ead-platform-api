@@ -1,11 +1,12 @@
 package com.ead.course.validation;
 
+import com.ead.course.configs.security.AuthenticationCurrentUserService;
 import com.ead.course.dtos.CourseDto;
 import com.ead.course.enums.UserType;
 import com.ead.course.models.User;
 import com.ead.course.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -19,9 +20,12 @@ public class CourseValidator implements Validator {
     private final Validator validator;
     private final UserService userService;
 
-    public CourseValidator(@Qualifier("defaultValidator") Validator validator, UserService userService) {
+    private final AuthenticationCurrentUserService authenticationCurrentUserService;
+
+    public CourseValidator(@Qualifier("defaultValidator") Validator validator, UserService userService, AuthenticationCurrentUserService authenticationCurrentUserService) {
         this.validator = validator;
         this.userService = userService;
+        this.authenticationCurrentUserService = authenticationCurrentUserService;
     }
 
     @Override
@@ -40,16 +44,22 @@ public class CourseValidator implements Validator {
 
     private void validateUserInstructor(UUID userInstructor, Errors errors) {
 
-        Optional<User> userOptional = userService.findById(userInstructor);
+        UUID currentUserId = authenticationCurrentUserService.getCurrentUser().getUserId();
 
-        if (userOptional.isEmpty()) {
-            errors.rejectValue("userInstructor", "UserInstructorError",
-                    "Instructor not found.");
+        if (currentUserId.equals(userInstructor)) {
+            Optional<User> userOptional = userService.findById(userInstructor);
+            if (userOptional.isEmpty()) {
+                errors.rejectValue("userInstructor", "UserInstructorError",
+                        "Instructor not found.");
+            }
+            if (userOptional.isPresent() && userOptional.get().getUserType().equals(UserType.STUDENT.toString())) {
+                errors.rejectValue("userInstructor", "UserInstructorError",
+                        "User must be INSTRUCTOR or ADMIN.");
+            }
+        } else {
+            throw new AccessDeniedException("Forbidden");
         }
-        if (userOptional.isPresent() && userOptional.get().getUserType().equals(UserType.STUDENT.toString())) {
-            errors.rejectValue("userInstructor", "UserInstructorError",
-                    "User must be INSTRUCTOR or ADMIN.");
-        }
+
 
     }
 }
