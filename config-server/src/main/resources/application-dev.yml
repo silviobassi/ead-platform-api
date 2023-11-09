@@ -8,7 +8,7 @@ spring:
           uri: https://github.com/silviobassi/ead-config-server-repository
           default-label: main
           username: silviobassi
-          password: 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
+          password: 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
 ead:
   configServer:
     username: configserver
