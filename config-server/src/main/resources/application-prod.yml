@@ -10,6 +10,7 @@ spring:
           username: ${GIT_USERNAME}
           password: ${GIT_PASSWORD}
 
+
 encrypt:
   key: GNUhowUW3sPTw+ztgYeZpiP6vNvNd0XbCPD+2yARJiRrL0WFaOUAg9LB3A84W42mcgXYm3XnAyl98fxV2iUC5u0MBRPDrE5enMXAd+if3R0=
 
