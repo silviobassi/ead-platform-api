@@ -2,4 +2,4 @@ spring:
   application:
     name: ead-config-server
   profiles:
-    active: dev
+    active: prod
