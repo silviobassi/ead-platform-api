@@ -4,6 +4,10 @@ spring:
   cloud:
     config:
       discovery:
+<<<<<<< HEAD
         service-id: ead-config-server
+=======
+        serviceId: ead-config-server
+>>>>>>> dev
       username: configserver
       password: 'ead123cs'

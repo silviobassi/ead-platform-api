@@ -91,6 +91,44 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userModel);
     }
 
+    @PostMapping("/signup/usr")
+    public ResponseEntity<?> registerUserAdmin(@RequestBody
+                                          @Validated(UserDto.UserView.RegistrationPost.class)
+                                          @JsonView(UserDto.UserView.RegistrationPost.class)
+                                          UserDto userDto) {
+
+        log.debug("POST registerUser userDTO received {} ", userDto.toString());
+
+        if (userService.existsByUserName(userDto.userName())) {
+            log.warn("UserName {} is Already Taken ", userDto.userName());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Username is Already Taken!");
+        }
+
+        if (userService.existsByEmail(userDto.email())) {
+            log.warn("Email {} is Already Taken ", userDto.email());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Email is Already Taken!");
+        }
+
+        Role role = roleService.findByRoleName(RoleType.ROLE_ADMIN);
+        String password = passwordEncoder.encode(userDto.password());
+
+        var userModel = new User();
+        BeanUtils.copyProperties(userDto, userModel);
+        userModel.setPassword(password);
+        userModel.setUserStatus(UserStatus.ACTIVE);
+        userModel.setUserType(UserType.ADMIN);
+        userModel.setCreationDate(OffsetDateTime.now(ZoneId.of("UTC")));
+        userModel.setLastUpdateDate(OffsetDateTime.now(ZoneId.of("UTC")));
+
+        userModel.getRoles().add(role);
+        userService.saveUser(userModel);
+
+        log.debug("POST registerUser userId saved {} ", userModel.getUserId());
+        log.info("User saved successfully userId {} ", userModel.getUserId());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(userModel);
+    }
+
     @PostMapping("/login")
     public ResponseEntity<JwtDto> authenticateUser(@Valid @RequestBody LoginDto loginDto)
             throws NoSuchAlgorithmException, InvalidKeySpecException {

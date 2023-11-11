@@ -1,5 +1,13 @@
+<<<<<<< HEAD
 spring:
   application:
     name: ead-course-service
   profiles:
     active: prod
+=======
+spring:
+  application:
+    name: ead-course-service
+  profiles:
+    active: dev
+>>>>>>> dev

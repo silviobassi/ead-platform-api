@@ -2,4 +2,8 @@ spring:
   application:
     name: ead-api-gateway
   profiles:
+<<<<<<< HEAD
     active: prod
+=======
+    active: dev
+>>>>>>> dev

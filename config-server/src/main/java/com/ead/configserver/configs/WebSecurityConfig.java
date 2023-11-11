@@ -26,14 +26,14 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
                                 .anyRequest()
                                 .authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
-                .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults());
-
 
         return http.build();
     }

@@ -8,7 +8,11 @@ spring:
           uri: https://github.com/silviobassi/ead-config-server-repository
           default-label: main
           username: silviobassi
+<<<<<<< HEAD
           password: 
+=======
+          password: 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
+>>>>>>> dev
 ead:
   configServer:
     username: configserver
@@ -17,7 +21,12 @@ ead:
     username: serviceregistry
     password: 'ead123sr'
 
+<<<<<<< HEAD
 
+=======
+encrypt:
+  key: GNUhowUW3sPTw+ztgYeZpiP6vNvNd0XbCPD+2yARJiRrL0WFaOUAg9LB3A84W42mcgXYm3XnAyl98fxV2iUC5u0MBRPDrE5enMXAd+if3R0=
+>>>>>>> dev
 
 eureka:
   client:
