@@ -1,5 +1,6 @@
 package com.ead.notification;
 
+import com.ead.notification.models.Notification;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -12,7 +13,7 @@ public class NotificationApplication {
 
     public static void main(String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        SpringApplication.run(NotificationApplication.class, args);
+        SpringApplication.run(Notification.class, args);
     }
 
 }

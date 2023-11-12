@@ -1,34 +1,19 @@
-package com.ead.notification.models;
-
-import com.ead.notification.enums.NotificationStatus;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.*;
+package com.ead.eadnotificationhex.core.domain;
 
 import java.time.OffsetDateTime;
+import com.ead.eadnotificationhex.core.domain.enums.NotificationStatus;
+
 import java.util.Objects;
 import java.util.UUID;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@Entity
-@Table(name = "notifications")
-public class Notification {
+public class NotificationDomain {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID notificationId;
-    @Column(nullable = false)
     private UUID userId;
-    @Column(nullable = false, length = 150)
     private String title;
-    @Column(nullable = false)
     private String message;
-    @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private OffsetDateTime creationDate;
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private NotificationStatus notificationStatus;
+    private NotificationStatus NotificationStatus;
 
     public UUID getNotificationId() {
         return notificationId;
@@ -70,12 +55,12 @@ public class Notification {
         this.creationDate = creationDate;
     }
 
-    public NotificationStatus getNotificationStatus() {
-        return notificationStatus;
+    public com.ead.eadnotificationhex.core.domain.enums.NotificationStatus getNotificationStatus() {
+        return NotificationStatus;
     }
 
-    public void setNotificationStatus(NotificationStatus notificationStatus) {
-        this.notificationStatus = notificationStatus;
+    public void setNotificationStatus(com.ead.eadnotificationhex.core.domain.enums.NotificationStatus notificationStatus) {
+        NotificationStatus = notificationStatus;
     }
 
     @Override
@@ -83,7 +68,7 @@ public class Notification {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Notification that = (Notification) o;
+        NotificationDomain that = (NotificationDomain) o;
 
         if (!Objects.equals(notificationId, that.notificationId))
             return false;
@@ -91,7 +76,7 @@ public class Notification {
         if (!Objects.equals(title, that.title)) return false;
         if (!Objects.equals(message, that.message)) return false;
         if (!Objects.equals(creationDate, that.creationDate)) return false;
-        return notificationStatus == that.notificationStatus;
+        return NotificationStatus == that.NotificationStatus;
     }
 
     @Override
@@ -101,7 +86,7 @@ public class Notification {
         result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (message != null ? message.hashCode() : 0);
         result = 31 * result + (creationDate != null ? creationDate.hashCode() : 0);
-        result = 31 * result + (notificationStatus != null ? notificationStatus.hashCode() : 0);
+        result = 31 * result + (NotificationStatus != null ? NotificationStatus.hashCode() : 0);
         return result;
     }
 }

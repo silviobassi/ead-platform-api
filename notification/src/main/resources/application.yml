@@ -1,5 +1,5 @@
 spring:
   application:
-    name: ead-notification-service
+    name: ead-NotificationDomain-service
   profiles:
     active: dev

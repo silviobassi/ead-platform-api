@@ -1,11 +1,11 @@
 package com.ead.course.services.impl;
 
-import com.ead.course.dtos.NotificationCommandDto;
+import com.ead.course.dtos.NotificationDomainCommandDto;
 import com.ead.course.models.Course;
 import com.ead.course.models.Lesson;
 import com.ead.course.models.Module;
 import com.ead.course.models.User;
-import com.ead.course.publishers.NotificationCommandPublisher;
+import com.ead.course.publishers.NotificationDomainCommandPublisher;
 import com.ead.course.repositories.CourseRepository;
 import com.ead.course.repositories.LessonRepository;
 import com.ead.course.repositories.ModuleRepository;
@@ -29,15 +29,15 @@ public class CourseServiceImpl implements CourseService {
     final CourseRepository courseRepository;
     final ModuleRepository moduleRepository;
     final LessonRepository lessonRepository;
-    final NotificationCommandPublisher notificationCommandPublisher;
+    final NotificationDomainCommandPublisher NotificationDomainCommandPublisher;
 
 
     public CourseServiceImpl(CourseRepository courseRepository, ModuleRepository moduleRepository,
-                             LessonRepository lessonRepository, NotificationCommandPublisher notificationCommandPublisher) {
+                             LessonRepository lessonRepository, NotificationDomainCommandPublisher NotificationDomainCommandPublisher) {
         this.courseRepository = courseRepository;
         this.moduleRepository = moduleRepository;
         this.lessonRepository = lessonRepository;
-        this.notificationCommandPublisher = notificationCommandPublisher;
+        this.NotificationDomainCommandPublisher = NotificationDomainCommandPublisher;
     }
 
     @Override
@@ -86,17 +86,17 @@ public class CourseServiceImpl implements CourseService {
 
     @Transactional
     @Override
-    public void saveSubscriptionUserInCourseAndSendNotification(Course course, User user) {
+    public void saveSubscriptionUserInCourseAndSendNotificationDomain(Course course, User user) {
         courseRepository.saveCourseUser(course.getCourseId(), user.getUserId());
         try {
-            NotificationCommandDto notificationCommandDto = new NotificationCommandDto(
+            NotificationDomainCommandDto NotificationDomainCommandDto = new NotificationDomainCommandDto(
                     "Bem-vindo(a) ao Curso: " + course.getName(),
                     user.getFullName() + " a sua inscrição foi realizada com sucesso!",
                     user.getUserId()
             );
-            notificationCommandPublisher.publishNotificationCommand(notificationCommandDto);
+            NotificationDomainCommandPublisher.publishNotificationDomainCommand(NotificationDomainCommandDto);
         } catch (Exception e) {
-            log.warn("Error sending notification!");
+            log.warn("Error sending NotificationDomain!");
         }
 
     }

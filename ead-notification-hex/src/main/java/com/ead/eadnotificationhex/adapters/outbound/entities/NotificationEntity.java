@@ -1,6 +1,6 @@
-package com.ead.notification.models;
+package com.ead.eadnotificationhex.adapters.outbound.entities;
 
-import com.ead.notification.enums.NotificationStatus;
+import com.ead.eadnotificationhex.core.domain.enums.NotificationStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Table(name = "notifications")
-public class Notification {
+public class NotificationEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -83,7 +83,7 @@ public class Notification {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Notification that = (Notification) o;
+        NotificationEntity that = (NotificationEntity) o;
 
         if (!Objects.equals(notificationId, that.notificationId))
             return false;
