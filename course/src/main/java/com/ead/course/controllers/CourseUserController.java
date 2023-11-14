@@ -1,6 +1,5 @@
 package com.ead.course.controllers;
 
-import com.ead.course.dtos.NotificationDomainCommandDto;
 import com.ead.course.dtos.SubscriptionDto;
 import com.ead.course.enums.UserStatus;
 import com.ead.course.models.Course;
@@ -72,7 +71,7 @@ public class CourseUserController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User is blocked");
         }
 
-        courseService.saveSubscriptionUserInCourseAndSendNotificationDomain(courseOptional.get(), userOptional.get());
+        courseService.saveSubscriptionUserInCourseAndSendNotification(courseOptional.get(), userOptional.get());
         return ResponseEntity.status(HttpStatus.CREATED).body("Subscription created successfully");
     }
 

@@ -1,5 +1,5 @@
 spring:
+  application:
+    name: ead-notification-service-hex
   profiles:
     active: dev
-  application:
-    name: ead-NotificationDomain-service-hex

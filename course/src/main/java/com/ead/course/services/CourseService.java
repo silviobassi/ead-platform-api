@@ -1,6 +1,5 @@
 package com.ead.course.services;
 
-import com.ead.course.dtos.NotificationDomainCommandDto;
 import com.ead.course.models.Course;
 import com.ead.course.models.User;
 import org.springframework.data.domain.Page;
@@ -24,6 +23,6 @@ public interface CourseService {
 
     void saveSubscriptionUserInCourse(UUID courseId, UUID userId);
 
-    void saveSubscriptionUserInCourseAndSendNotificationDomain(Course course, User user);
+    void saveSubscriptionUserInCourseAndSendNotification(Course course, User user);
 
 }

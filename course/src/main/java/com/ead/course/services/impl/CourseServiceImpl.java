@@ -1,17 +1,16 @@
 package com.ead.course.services.impl;
 
-import com.ead.course.dtos.NotificationDomainCommandDto;
+import com.ead.course.dtos.NotificationCommandDto;
 import com.ead.course.models.Course;
 import com.ead.course.models.Lesson;
 import com.ead.course.models.Module;
 import com.ead.course.models.User;
-import com.ead.course.publishers.NotificationDomainCommandPublisher;
+import com.ead.course.publishers.NotificationCommandPublisher;
 import com.ead.course.repositories.CourseRepository;
 import com.ead.course.repositories.LessonRepository;
 import com.ead.course.repositories.ModuleRepository;
 import com.ead.course.services.CourseService;
 import jakarta.transaction.Transactional;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,15 +28,15 @@ public class CourseServiceImpl implements CourseService {
     final CourseRepository courseRepository;
     final ModuleRepository moduleRepository;
     final LessonRepository lessonRepository;
-    final NotificationDomainCommandPublisher NotificationDomainCommandPublisher;
+    final NotificationCommandPublisher notificationCommandPublisher;
 
 
     public CourseServiceImpl(CourseRepository courseRepository, ModuleRepository moduleRepository,
-                             LessonRepository lessonRepository, NotificationDomainCommandPublisher NotificationDomainCommandPublisher) {
+                             LessonRepository lessonRepository, NotificationCommandPublisher notificationCommandPublisher) {
         this.courseRepository = courseRepository;
         this.moduleRepository = moduleRepository;
         this.lessonRepository = lessonRepository;
-        this.NotificationDomainCommandPublisher = NotificationDomainCommandPublisher;
+        this.notificationCommandPublisher = notificationCommandPublisher;
     }
 
     @Override
@@ -86,15 +85,15 @@ public class CourseServiceImpl implements CourseService {
 
     @Transactional
     @Override
-    public void saveSubscriptionUserInCourseAndSendNotificationDomain(Course course, User user) {
+    public void saveSubscriptionUserInCourseAndSendNotification(Course course, User user) {
         courseRepository.saveCourseUser(course.getCourseId(), user.getUserId());
         try {
-            NotificationDomainCommandDto NotificationDomainCommandDto = new NotificationDomainCommandDto(
+            NotificationCommandDto NotificationDomainCommandDto = new NotificationCommandDto(
                     "Bem-vindo(a) ao Curso: " + course.getName(),
                     user.getFullName() + " a sua inscrição foi realizada com sucesso!",
                     user.getUserId()
             );
-            NotificationDomainCommandPublisher.publishNotificationDomainCommand(NotificationDomainCommandDto);
+            notificationCommandPublisher.publishNotificationDomainCommand(NotificationDomainCommandDto);
         } catch (Exception e) {
             log.warn("Error sending NotificationDomain!");
         }

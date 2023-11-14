@@ -13,7 +13,8 @@ public class NotificationApplication {
 
     public static void main(String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        SpringApplication.run(Notification.class, args);
+        SpringApplication app = new SpringApplication(NotificationApplication.class);
+        app.run(args);
     }
 
 }
